@@ -11,7 +11,7 @@ type DataEntry = {
     Name: string;
 };
 
-export const storeData = async (date: Date, value: DataEntry[]) => {
+export const setData = async (date: Date, value: DataEntry[]) => {
     try {
         const key = `${date.getDate()}/${
             date.getMonth() + 1
