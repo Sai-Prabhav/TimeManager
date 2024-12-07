@@ -2,7 +2,7 @@ import { View, SafeAreaView, StyleSheet, Text, StatusBar } from "react-native";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { DaySelector } from "@/components/DaySelector";
 import { useState } from "react";
-import { getData, setData } from "../../util/storage";
+import { getData, setData, generateSchedule } from "../../util/storage";
 export default function HomeScreen() {
     const [SelectedDate, setSelectedDate] = useState(5);
     const now = new Date();
@@ -169,6 +169,24 @@ export default function HomeScreen() {
             Name: "Leisure",
         },
     ]);
+
+    // Generate and set schedules for the past 5 days
+    for (let i = -5; i < 0; i++) {
+        const schedule = generateSchedule(now, i);
+        setData(
+            new Date(now.getFullYear(), now.getMonth(), now.getDate() + i),
+            schedule
+        );
+    }
+
+    // Generate and set schedules for the next 5 days
+    for (let i = 1; i <= 5; i++) {
+        const schedule = generateSchedule(now, i);
+        setData(
+            new Date(now.getFullYear(), now.getMonth(), now.getDate() + i),
+            schedule
+        );
+    }
     return (
         <SafeAreaView style={styles.SafeArea}>
             <Text style={styles.Header}>Home</Text>
