@@ -171,20 +171,12 @@ export default function HomeScreen() {
         },
     ]);
 
-    // Generate and set schedules for the past 5 days
-    for (let i = -5; i < 0; i++) {
-        const schedule = generateSchedule(now, i);
-        setData(
-            new Date(now.getFullYear(), now.getMonth(), now.getDate() + i),
-            schedule
-        );
-    }
+    for (let i = 1; i <= 11; i++) {
+        const now = new Date(Date.now() - (i- 5) * 864e5);
 
-    // Generate and set schedules for the next 5 days
-    for (let i = 1; i <= 5; i++) {
-        const schedule = generateSchedule(now, i);
+        const schedule = generateSchedule(now, 3);
         setData(
-            new Date(now.getFullYear(), now.getMonth(), now.getDate() + i),
+            new Date(now.getFullYear(), now.getMonth(), now.getDate() ),
             schedule
         );
     }
