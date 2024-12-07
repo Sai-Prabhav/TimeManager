@@ -1,7 +1,7 @@
 // utils/storage.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type DataEntry = {
+export type DataType = {
     StartTime: Date;
     EndTime: Date;
     Category: string;
@@ -11,7 +11,7 @@ type DataEntry = {
     Name: string;
 };
 
-export const setData = async (date: Date, value: DataEntry[]) => {
+export const setData = async (date: Date, value: DataType[]) => {
     try {
         const key = `${date.getDate()}/${
             date.getMonth() + 1
@@ -22,7 +22,7 @@ export const setData = async (date: Date, value: DataEntry[]) => {
     }
 };
 
-export const getData = async (date: Date): Promise<DataEntry[] | null> => {
+export const getData = async (date: Date): Promise<DataType[] | null> => {
     try {
         const key = `${date.getDate()}/${
             date.getMonth() + 1

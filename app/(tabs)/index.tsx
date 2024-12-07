@@ -2,9 +2,10 @@ import { View, SafeAreaView, StyleSheet, Text, StatusBar } from "react-native";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { DaySelector } from "@/components/DaySelector";
 import { useState } from "react";
-import { getData, setData, generateSchedule } from "../../util/storage";
+import { setData, generateSchedule } from "../../util/storage";
+import TaskEditor from "@/components/TaskEditor";
 export default function HomeScreen() {
-    const [SelectedDate, setSelectedDate] = useState(5);
+    const [selectedDate, setSelectedDate] = useState(5);
     const now = new Date();
     setData(now, [
         {
@@ -192,9 +193,11 @@ export default function HomeScreen() {
             <Text style={styles.Header}>Home</Text>
 
             <DaySelector
-                SelectedDate={SelectedDate}
+                SelectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
             />
+
+            <TaskEditor selectedDate={selectedDate} />
         </SafeAreaView>
     );
 }
