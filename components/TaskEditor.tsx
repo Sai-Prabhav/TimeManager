@@ -7,22 +7,26 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { getData, DataType } from "@/util/storage";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import EditTask from "./EditTask";
 
 const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
     // ref
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [data, setData] = useState<DataType[] | null>(null);
-    const snapPoints = useMemo(() => ["50%"], []);
+    const snapPoints = useMemo(() => ["50%", "100%"], []);
     const [height, setHeight] = useState(2000);
+
+    const [selectedTask, setSelectedTask] = useState<DataType | null>(null);
     const handleOpen = () => {
         if (bottomSheetRef.current) {
-            bottomSheetRef.current.expand();
-            console.log("oppened");
+            bottomSheetRef.current.snapToIndex(1);
+            console.log("open");
+            
         }
     };
-    console.log(data);
+
+    // console.log(data);
     // handleOpen();
     useEffect(() => {
         const fetchData = async () => {
@@ -68,7 +72,7 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                             })}
                             {data.map((item: DataType) => {
                                 return (
-                                    <View
+                                    <View key={new Date(item.StartTime).toISOString()}
                                         style={[
                                             styles.Task,
                                             {
@@ -89,15 +93,19 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                                         ]}
                                     >
                                         <TouchableOpacity
-                                            onPressIn={handleOpen}
+                                            onPressIn={() => {
+                                                setSelectedTask(item);
+                                                handleOpen();
+                                            }}
                                             style={{ height: "100%" }}
                                         >
                                             <Text style={{ color: "white" }}>
-                                                {item.Category}
+                                                {item.Name}
                                             </Text>
                                             <Text style={{ color: "white" }}>
-                                                {item.SubCategory}
+                                                {item.Category}
                                             </Text>
+                                          
                                         </TouchableOpacity>
                                     </View>
                                 );
@@ -105,18 +113,23 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                         </View>
                     </View>
                 </ScrollView>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={handleOpen}
                     style={{ backgroundColor: "red", height: 100 }}
-                ></TouchableOpacity>
+                ></TouchableOpacity> */}
 
-                <BottomSheet snapPoints={snapPoints} ref={bottomSheetRef}>
-                    <BottomSheetView
-                        style={{ backgroundColor: "blue", height: "100%" }}
-                    >
-                        <Text style={{ color: "white", fontSize: 40 }}>
-                            Awesome 🎉
-                        </Text>
+                <BottomSheet
+                    index={-1}
+                    enablePanDownToClose
+                    snapPoints={snapPoints}
+                    ref={bottomSheetRef}
+                >
+                    <BottomSheetView style={{ backgroundColor: "white" }}>
+                        <EditTask
+                            selectedTask={selectedTask}
+                            setSelectedTask={setSelectedTask}
+                        />
+                        <Text style={{ backgroundColor: "white" }}>{JSON.stringify(selectedTask)}</Text>
                     </BottomSheetView>
                 </BottomSheet>
             </View>

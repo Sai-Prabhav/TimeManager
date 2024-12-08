@@ -8,7 +8,7 @@ import {
 import React, { useState, useEffect } from "react";
 
 export function DaySelector({
-    SelectedDate,
+    SelectedDate: selectedDate,
     setSelectedDate,
 }: {
     SelectedDate: number;
@@ -28,14 +28,14 @@ export function DaySelector({
                         return (
                             <TouchableOpacity
                                 onPress={() => setSelectedDate(i)}
+                                key={i}
                             >
                                 <View
                                     style={
-                                        SelectedDate === i
+                                        selectedDate === i
                                             ? styles.SelectedContainer
                                             : styles.Container
                                     }
-                                    key={i}
                                 >
                                     <Text style={styles.Month}>
                                         {date.toLocaleString("default", {

@@ -5,7 +5,6 @@ export type DataType = {
     StartTime: Date;
     EndTime: Date;
     Category: string;
-    SubCategory: string;
     Description: string;
     Score: number;
     Name: string;
@@ -16,7 +15,14 @@ export const setData = async (date: Date, value: DataType[]) => {
         const key = `${date.getDate()}/${
             date.getMonth() + 1
         }/${date.getFullYear()}`;
-        await AsyncStorage.setItem(key, JSON.stringify(value));
+        await AsyncStorage.setItem(
+            key,
+            JSON.stringify(
+                value.sort(
+                    (a, b) => a.StartTime.getTime() - b.StartTime.getTime()
+                )
+            )
+        );
     } catch (e) {
         // saving error
     }
@@ -35,10 +41,8 @@ export const getData = async (date: Date): Promise<DataType[] | null> => {
     }
 };
 
-
-
 // Function to generate unique schedules for a range of dates
-export function generateSchedule(baseDate:any, offset:any) {
+export function generateSchedule(baseDate: any, offset: any) {
     const date = new Date(baseDate);
     date.setDate(baseDate.getDate() + offset);
 
@@ -47,55 +51,133 @@ export function generateSchedule(baseDate:any, offset:any) {
 
     return [
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration,
+                0,
+                0
+            ),
             Category: "Morning Routine",
-            SubCategory: "Exercise",
             Description: "Morning Exercise",
             Score: 10,
             Name: "Exercise",
         },
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 2, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 2,
+                0,
+                0
+            ),
             Category: "Work",
-            SubCategory: "Focus Work",
             Description: "Focused Work Session",
             Score: 10,
             Name: "Work",
         },
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 2, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 3, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 2,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 3,
+                0,
+                0
+            ),
             Category: "Lunch",
-            SubCategory: "Break",
             Description: "Lunch Break",
             Score: 10,
             Name: "Lunch",
         },
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 3, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 7, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 3,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 7,
+                0,
+                0
+            ),
             Category: "Work",
-            SubCategory: "Deep Work",
             Description: "Deep Work Session",
             Score: 10,
             Name: "Work",
         },
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 7, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 8, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 7,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 8,
+                0,
+                0
+            ),
             Category: "Dinner",
-            SubCategory: "Evening Meal",
             Description: "Dinner",
             Score: 10,
             Name: "Dinner",
         },
         {
-            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 8, 0, 0),
-            EndTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour + taskDuration + 10, 0, 0),
+            StartTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 8,
+                0,
+                0
+            ),
+            EndTime: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                startHour + taskDuration + 10,
+                0,
+                0
+            ),
             Category: "Leisure",
-            SubCategory: "Relaxation",
             Description: "Relaxation Time",
             Score: 10,
             Name: "Leisure",
@@ -103,3 +185,38 @@ export function generateSchedule(baseDate:any, offset:any) {
     ];
 }
 
+export const addCategory = async (category: string) => {
+    try {
+        const key = "categories";
+        const value = await AsyncStorage.getItem(key);
+        const categories = value ? JSON.parse(value) : [];
+        categories.push(category);
+        await AsyncStorage.setItem(key, JSON.stringify(categories));
+    } catch (e) {
+        // saving error
+    }
+};
+
+export const getCategories = async (): Promise<string[] | null> => {
+    try {
+        const key = "categories";
+        const value = await AsyncStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+    } catch (e) {
+        // error reading value
+        return null;
+    }
+};
+
+export const addDefaultCategories = async () => {
+    const categories = [
+        "Morning Routine",
+        "Work",
+        "Lunch",
+        "Dinner",
+        "Leisure",
+    ];
+    for (const category of categories) {
+        await addCategory(category);
+    }
+};
