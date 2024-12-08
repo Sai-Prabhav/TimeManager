@@ -187,11 +187,13 @@ export function generateSchedule(baseDate: any, offset: any) {
 
 export const addCategory = async (category: string) => {
     try {
-        const key = "categories";
-        const value = await AsyncStorage.getItem(key);
-        const categories = value ? JSON.parse(value) : [];
-        categories.push(category);
-        await AsyncStorage.setItem(key, JSON.stringify(categories));
+        if (!(category in getCategories())) {
+            const key = "categories";
+            const value = await AsyncStorage.getItem(key);
+            const categories = value ? JSON.parse(value) : [];
+            categories.push(category);
+            await AsyncStorage.setItem(key, JSON.stringify(categories));
+        }
     } catch (e) {
         // saving error
     }
@@ -207,8 +209,8 @@ export const getCategories = async (): Promise<string[] | null> => {
         return null;
     }
 };
-
-export const addDefaultCategories = async () => {
+AsyncStorage.removeItem("categories");
+const addDefaultCategories = async () => {
     const categories = [
         "Morning Routine",
         "Work",
@@ -220,3 +222,5 @@ export const addDefaultCategories = async () => {
         await addCategory(category);
     }
 };
+
+addDefaultCategories();

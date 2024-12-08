@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useState } from "react";
-import { DataType } from "@/util/storage";
-
+import React, { useEffect, useState } from "react";
+import { DataType, getCategories } from "@/util/storage";
+import { Dropdown } from "react-native-element-dropdown";
 const EditTask = ({
     selectedTask,
     setSelectedTask,
@@ -10,11 +10,31 @@ const EditTask = ({
     setSelectedTask: React.Dispatch<React.SetStateAction<DataType | null>>;
 }) => {
     if (selectedTask) {
-
         const [name, setName] = useState(selectedTask?.Name);
-        if (name!==selectedTask?.Name) {
+        const [description, setDescription] = useState(
+            selectedTask?.Description
+        );
+        const [score, setScore] = useState(selectedTask?.Score);
+        const [categories, setCategories] = useState([""]);
+        const [category, setCategory] = useState("");
+        useEffect(() => {
             setName(selectedTask?.Name);
-        }
+            setDescription(selectedTask?.Description);
+            setScore(selectedTask?.Score);
+        }, [selectedTask]);
+        useEffect(() => {
+            const fetchData = async () => {
+                const data = await getCategories();
+                setCategories(data ?? []);
+            };
+            fetchData();
+        }, []);
+        // if (name !== selectedTask?.Name && selectedTask?.Name) {
+        //     setName(selectedTask?.Name);
+        // }
+        // if (description !== selectedTask?.Description) {
+        //     setDescription(selectedTask?.Description);
+        // }
         // setName(selectedTask?.Name);
         return (
             <View style={styles.Container}>
@@ -29,7 +49,53 @@ const EditTask = ({
                         placeholder={name}
                     />
                 </View>
-                <Text style={styles.Label}>{name}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={styles.Label}>Description</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setDescription}
+                        value={description}
+                        placeholder={description}
+                    />
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={styles.Label}>Score</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(t) => setScore(Number(t))}
+                        value={score?.toString()}
+                        keyboardType="numeric"
+                        placeholder={score?.toString()}
+                    />
+                </View>
+                <Dropdown
+                    style={{
+                        margin: 16,
+                        height: 50,
+                        borderBottomColor: "gray",
+                        borderBottomWidth: 0.5,
+                    }}
+                    data={categories.map((c) => ({ label: c, value: c }))}
+                    placeholderStyle={{
+                        backgroundColor: "skyblue",
+                        color: "black",
+                        fontSize: 16,
+                    }}
+                    selectedTextStyle={{
+                        backgroundColor: "purple",
+                        color: "black",
+                        fontSize: 16,
+                    }}
+                    inputSearchStyle={{
+                        backgroundColor: "yellow",
+                        color: "black",
+                        fontSize: 16,
+                    }}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={category}
+                    onChange={setCategory}
+                />
             </View>
         );
     } else {

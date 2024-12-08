@@ -28,7 +28,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Morning Routine",
-            SubCategory: "Breakfast",
             Description: "Breakfast",
             Score: 10,
             Name: "Breakfast",
@@ -51,7 +50,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Morning Routine",
-            SubCategory: "Exercise",
             Description: "Exercise",
             Score: 10,
             Name: "Exercise",
@@ -74,7 +72,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Work",
-            SubCategory: "Work",
             Description: "Work",
             Score: 10,
             Name: "Work",
@@ -97,7 +94,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Lunch",
-            SubCategory: "Lunch",
             Description: "Lunch",
             Score: 10,
             Name: "Lunch",
@@ -120,7 +116,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Work",
-            SubCategory: "Work",
             Description: "Work",
             Score: 10,
             Name: "Work",
@@ -143,7 +138,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Dinner",
-            SubCategory: "Dinner",
             Description: "Dinner",
             Score: 10,
             Name: "Dinner",
@@ -166,7 +160,6 @@ export default function HomeScreen() {
                 0
             ),
             Category: "Leisure",
-            SubCategory: "Leisure",
             Description: "Leisure",
             Score: 10,
             Name: "Leisure",

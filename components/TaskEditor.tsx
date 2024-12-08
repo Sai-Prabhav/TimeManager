@@ -22,7 +22,6 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
         if (bottomSheetRef.current) {
             bottomSheetRef.current.snapToIndex(1);
             console.log("open");
-            
         }
     };
 
@@ -67,12 +66,16 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                                             styles.HourLines,
                                             { height: height / 24 },
                                         ]}
+                                        key={i}
                                     ></View>
                                 );
                             })}
                             {data.map((item: DataType) => {
                                 return (
-                                    <View key={new Date(item.StartTime).toISOString()}
+                                    <View
+                                        key={new Date(
+                                            item.StartTime
+                                        ).toISOString()}
                                         style={[
                                             styles.Task,
                                             {
@@ -105,7 +108,6 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                                             <Text style={{ color: "white" }}>
                                                 {item.Category}
                                             </Text>
-                                          
                                         </TouchableOpacity>
                                     </View>
                                 );
@@ -129,7 +131,9 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                             selectedTask={selectedTask}
                             setSelectedTask={setSelectedTask}
                         />
-                        <Text style={{ backgroundColor: "white" }}>{JSON.stringify(selectedTask)}</Text>
+                        <Text style={{ backgroundColor: "white" }}>
+                            {JSON.stringify(selectedTask)}
+                        </Text>
                     </BottomSheetView>
                 </BottomSheet>
             </View>
