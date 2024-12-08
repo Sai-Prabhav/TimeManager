@@ -1,12 +1,29 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React, { useState, useEffect } from "react";
+import {
+    StyleSheet,
+    Text,
+    View,
+    ScrollView,
+    TouchableOpacity,
+} from "react-native";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { getData, DataType } from "@/util/storage";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
+    // ref
+    const bottomSheetRef = useRef<BottomSheet>(null);
     const [data, setData] = useState<DataType[] | null>(null);
-
-    const [height, setHeight] = useState(1200);
+    const snapPoints = useMemo(() => ["50%"], []);
+    const [height, setHeight] = useState(2000);
+    const handleOpen = () => {
+        if (bottomSheetRef.current) {
+            bottomSheetRef.current.expand();
+            console.log("oppened");
+        }
+    };
     console.log(data);
+    // handleOpen();
     useEffect(() => {
         const fetchData = async () => {
             const data = await getData(
@@ -15,53 +32,94 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
             setData(data);
         };
         fetchData();
-    }, []);
+    }, [selectedDate]);
     if (data) {
         return (
-            <ScrollView>
-                <View style={[styles.Container, { height: height }]}>
-                    <View style={[styles.TimeLabels, { height: height }]}>
-                        {[...Array(24).keys()].map((i) => {
-                            return (
-                                <View
-                                    style={[
-                                        styles.TimeLabel,
-                                        { height: height / 24 },
-                                    ]}
-                                >
-                                    <Text>
-                                        {(i - (i % 10)) / 10}
-                                        {i % 10}
-                                    </Text>
-                                </View>
-                            );
-                        })}
+            <View style={{ backgroundColor: "blue", height: "100%" }}>
+                <ScrollView>
+                    <View style={[styles.Container, { height: height }]}>
+                        <View style={[styles.TimeLabels, { height: height }]}>
+                            {[...Array(24).keys()].map((i) => {
+                                return (
+                                    <View
+                                        style={[
+                                            styles.TimeLabel,
+                                            { height: height / 24 },
+                                        ]}
+                                    >
+                                        <Text>
+                                            {(i - (i % 10)) / 10}
+                                            {i % 10}
+                                        </Text>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                        <View style={[styles.TaskSheet, { height: height }]}>
+                            {[...Array(24).keys()].map((i) => {
+                                return (
+                                    <View
+                                        style={[
+                                            styles.HourLines,
+                                            { height: height / 24 },
+                                        ]}
+                                    ></View>
+                                );
+                            })}
+                            {data.map((item: DataType) => {
+                                return (
+                                    <View
+                                        style={[
+                                            styles.Task,
+                                            {
+                                                top:
+                                                    (new Date(
+                                                        item.StartTime
+                                                    ).getHours() *
+                                                        height) /
+                                                        24 +
+                                                    ((new Date(
+                                                        item.StartTime
+                                                    ).getMinutes() /
+                                                        60) *
+                                                        height) /
+                                                        24,
+                                                height: height / 24,
+                                            },
+                                        ]}
+                                    >
+                                        <TouchableOpacity
+                                            onPressIn={handleOpen}
+                                            style={{ height: "100%" }}
+                                        >
+                                            <Text style={{ color: "white" }}>
+                                                {item.Category}
+                                            </Text>
+                                            <Text style={{ color: "white" }}>
+                                                {item.SubCategory}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            })}
+                        </View>
                     </View>
-                    <View style={[styles.TaskSheet, { height: height }]}>
-                        {[...Array(24).keys()].map((i) => {
-                            return (
-                                <View
-                                    style={[
-                                        styles.HourLines,
-                                        { height: height / 24 },
-                                    ]}
-                                ></View>
-                            );
-                        })}
-                        {data.map((item: DataType) => {
-                            return (
-                                <View
-                                    style={[
-                                        styles.Task,
-                                        { height: height / 24 },
-                                    ]}
-                                ></View>
-                            );
-                        })}
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+                <TouchableOpacity
+                    onPress={handleOpen}
+                    style={{ backgroundColor: "red", height: 100 }}
+                ></TouchableOpacity>
 
+                <BottomSheet snapPoints={snapPoints} ref={bottomSheetRef}>
+                    <BottomSheetView
+                        style={{ backgroundColor: "blue", height: "100%" }}
+                    >
+                        <Text style={{ color: "white", fontSize: 40 }}>
+                            Awesome 🎉
+                        </Text>
+                    </BottomSheetView>
+                </BottomSheet>
+            </View>
             /** <ScrollView>
                 {data.map((item: DataType) => {
                     // You can also return JSX elements here
@@ -113,6 +171,8 @@ const styles = StyleSheet.create({
     TaskSheet: { backgroundColor: "green", width: "80%" },
     Task: {
         backgroundColor: "blue",
+        position: "absolute",
+        width: "100%",
     },
     TimeLabel: {
         backgroundColor: "#bbb",

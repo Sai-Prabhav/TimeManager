@@ -4,6 +4,8 @@ import { DaySelector } from "@/components/DaySelector";
 import { useState } from "react";
 import { setData, generateSchedule } from "../../util/storage";
 import TaskEditor from "@/components/TaskEditor";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 export default function HomeScreen() {
     const [selectedDate, setSelectedDate] = useState(5);
     const now = new Date();
@@ -172,25 +174,27 @@ export default function HomeScreen() {
     ]);
 
     for (let i = 1; i <= 11; i++) {
-        const now = new Date(Date.now() - (i- 5) * 864e5);
+        const now = new Date(Date.now() - (i - 5) * 864e5);
 
-        const schedule = generateSchedule(now, 3);
+        const schedule = generateSchedule(now, i % 4);
         setData(
-            new Date(now.getFullYear(), now.getMonth(), now.getDate() ),
+            new Date(now.getFullYear(), now.getMonth(), now.getDate()),
             schedule
         );
     }
     return (
-        <SafeAreaView style={styles.SafeArea}>
-            <Text style={styles.Header}>Home</Text>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={styles.SafeArea}>
+                <Text style={styles.Header}>Home</Text>
 
-            <DaySelector
-                SelectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-            />
+                <DaySelector
+                    SelectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                />
 
-            <TaskEditor selectedDate={selectedDate} />
-        </SafeAreaView>
+                <TaskEditor selectedDate={selectedDate} />
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
 }
 
