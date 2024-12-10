@@ -3,8 +3,9 @@ import {
     Text,
     View,
     ScrollView,
-    TouchableOpacity,
+    // TouchableOpacity,
 } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { getData, DataType } from "@/util/storage";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -14,7 +15,7 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
     // ref
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [data, setData] = useState<DataType[] | null>(null);
-    const snapPoints = useMemo(() => ["50%", "100%"], []);
+    const snapPoints = useMemo(() => ["70%", "100%"], []);
     const [height, setHeight] = useState(2000);
 
     const [selectedTask, setSelectedTask] = useState<DataType | null>(null);
@@ -24,27 +25,46 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
             console.log("open");
         }
     };
+    const handleClose = () => {
+        if (bottomSheetRef.current) {
+            bottomSheetRef.current.close();
+            console.log("open");
+        }
+    };
 
     // console.log(data);
     // handleOpen();
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getData(
-                new Date(Date.now() - (selectedDate - 5) * 864e5)
-            );
-            setData(data);
+            setData(await getData(new Date(Date.now() - selectedDate * 864e5)));
         };
         fetchData();
     }, [selectedDate]);
     if (data) {
         return (
             <View style={{ backgroundColor: "blue", height: "100%" }}>
-                <ScrollView>
+                <ScrollView
+                    contentOffset={{
+                        x: 0,
+                        y:
+                            data && data.length === 0
+                                ? 0
+                                : (new Date(data[0].StartTime).getHours() *
+                                      height) /
+                                      24 +
+                                  ((new Date(data[0].StartTime).getMinutes() /
+                                      60) *
+                                      height) /
+                                      24 -
+                                  10,
+                    }}
+                >
                     <View style={[styles.Container, { height: height }]}>
                         <View style={[styles.TimeLabels, { height: height }]}>
                             {[...Array(24).keys()].map((i) => {
                                 return (
                                     <View
+                                        key={i}
                                         style={[
                                             styles.TimeLabel,
                                             { height: height / 24 },
@@ -62,15 +82,154 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                             {[...Array(24).keys()].map((i) => {
                                 return (
                                     <View
+                                        key={i}
                                         style={[
                                             styles.HourLines,
                                             { height: height / 24 },
                                         ]}
-                                        key={i}
-                                    ></View>
+                                    />
                                 );
                             })}
-                            {data.map((item: DataType) => {
+                            {data.map((item: DataType, index: number) => {
+                                const start =
+                                    index === 0
+                                        ? 0
+                                        : (new Date(
+                                              data[index - 1].EndTime
+                                          ).getHours() *
+                                              height) /
+                                              24 +
+                                          ((new Date(
+                                              data[index - 1].EndTime
+                                          ).getMinutes() /
+                                              60) *
+                                              height) /
+                                              24;
+                                const end =
+                                    (new Date(item.StartTime).getHours() *
+                                        height) /
+                                        24 +
+                                    ((new Date(item.StartTime).getMinutes() /
+                                        60) *
+                                        height) /
+                                        24;
+                                if (start != end) {
+                                    return (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                {
+                                                    top: start,
+                                                    height: end - start,
+                                                    width: "100%",
+
+                                                    position: "absolute",
+                                                },
+                                            ]}
+                                        >
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setSelectedTask(null);
+                                                    handleOpen();
+                                                }}
+                                                style={{ height: "100%" }}
+                                            >
+                                                <Text>Click to add</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    );
+                                }
+                            })}
+                            {/* {console.log([data])==null} */}
+
+                            {data.length == 0 ? (
+                                <View
+                                    style={[
+                                        {
+                                            position: "absolute",
+                                            width: "100%",
+
+                                            top: 0,
+                                            height: height,
+                                        },
+                                    ]}
+                                >
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            console.log("add");
+
+                                            setSelectedTask(null);
+                                            handleOpen();
+                                        }}
+                                        style={{
+                                            height: "100%",
+                                            width: "100%",
+                                        }}
+                                    >
+                                        <Text>Click to add</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ) : (
+                                <View
+                                    style={[
+                                        {
+                                            width: "100%",
+                                            position: "absolute",
+                                            top:
+                                                (new Date(
+                                                    data[
+                                                        data.length - 1
+                                                    ].EndTime
+                                                ).getHours() *
+                                                    height) /
+                                                    24 +
+                                                ((new Date(
+                                                    data[
+                                                        data.length - 1
+                                                    ].EndTime
+                                                ).getMinutes() /
+                                                    60) *
+                                                    height) /
+                                                    24,
+                                            height:
+                                                height -
+                                                (new Date(
+                                                    data[
+                                                        data.length - 1
+                                                    ].StartTime
+                                                ).getHours() *
+                                                    height) /
+                                                    24 +
+                                                ((new Date(
+                                                    data[
+                                                        data.length - 1
+                                                    ].StartTime
+                                                ).getMinutes() /
+                                                    60) *
+                                                    height) /
+                                                    24,
+                                        },
+                                    ]}
+                                >
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setSelectedTask(null);
+                                            handleOpen();
+                                        }}
+                                        style={{ height: "100%" }}
+                                    >
+                                        <Text>Click to add</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                            {data.map((item: DataType, index: number) => {
+                                const min =
+                                    (new Date(item.EndTime).getHours() -
+                                        new Date(item.StartTime).getHours()) *
+                                        60 -
+                                    new Date(item.StartTime).getMinutes() +
+                                    new Date(item.EndTime).getMinutes();
+
                                 return (
                                     <View
                                         key={new Date(
@@ -90,13 +249,16 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                                                     ).getMinutes() /
                                                         60) *
                                                         height) /
-                                                        24,
-                                                height: height / 24,
+                                                        24 +
+                                                    10,
+                                                height:
+                                                    (min / 60) * (height / 24) -
+                                                    20,
                                             },
                                         ]}
                                     >
                                         <TouchableOpacity
-                                            onPressIn={() => {
+                                            onPress={() => {
                                                 setSelectedTask(item);
                                                 handleOpen();
                                             }}
@@ -130,6 +292,9 @@ const TaskEditor = ({ selectedDate }: { selectedDate: number }) => {
                         <EditTask
                             selectedTask={selectedTask}
                             setSelectedTask={setSelectedTask}
+                            handelClose={handleClose}
+                            selectedDate={selectedDate}
+                            setAppData={setData}
                         />
                         <Text style={{ backgroundColor: "white" }}>
                             {JSON.stringify(selectedTask)}
@@ -187,9 +352,15 @@ const styles = StyleSheet.create({
     TimeLabels: { backgroundColor: "red", width: "20%" },
     TaskSheet: { backgroundColor: "green", width: "80%" },
     Task: {
-        backgroundColor: "blue",
+        borderRadius: 5,
+        marginHorizontal: 5,
+        borderWidth: 1,
+        padding: 5,
+        width: "95%",
+
+        flex: 1,
+        backgroundColor: "#666",
         position: "absolute",
-        width: "100%",
     },
     TimeLabel: {
         backgroundColor: "#bbb",

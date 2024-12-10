@@ -4,6 +4,7 @@ import {
     View,
     ScrollView,
     TouchableOpacity,
+    Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 
@@ -20,11 +21,14 @@ export function DaySelector({
             <ScrollView
                 onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
                 horizontal
-                contentOffset={{ x: width / 2, y: 0 }}
+                contentOffset={{
+                    x: 0,
+                    y: 0,
+                }}
             >
                 <View style={styles.ScrollView}>
                     {[...Array(11).keys()].map((i) => {
-                        const date = new Date(Date.now() + (i - 5) * 864e5);
+                        const date = new Date(Date.now() + (-i) * 864e5);
                         return (
                             <TouchableOpacity
                                 onPress={() => setSelectedDate(i)}

@@ -19,7 +19,9 @@ export const setData = async (date: Date, value: DataType[]) => {
             key,
             JSON.stringify(
                 value.sort(
-                    (a, b) => a.StartTime.getTime() - b.StartTime.getTime()
+                    (a, b) =>
+                        new Date(a.StartTime).getTime() -
+                        new Date(b.StartTime).getTime()
                 )
             )
         );
@@ -34,7 +36,11 @@ export const getData = async (date: Date): Promise<DataType[] | null> => {
             date.getMonth() + 1
         }/${date.getFullYear()}`;
         const value = await AsyncStorage.getItem(key);
-        return value ? JSON.parse(value) : null;
+        if (!value) {
+            setData(date, []);
+            return getData(date);
+        }
+        return JSON.parse(value);
     } catch (e) {
         // error reading value
         return null;
@@ -42,7 +48,7 @@ export const getData = async (date: Date): Promise<DataType[] | null> => {
 };
 
 // Function to generate unique schedules for a range of dates
-export function generateSchedule(baseDate: any, offset: any) {
+function generateSchedule(baseDate: any, offset: any) {
     const date = new Date(baseDate);
     date.setDate(baseDate.getDate() + offset);
 
